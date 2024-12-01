@@ -19,6 +19,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
+import com.wings.jwt.demo.exceptionhandling.AuthEntryPoint;
 import com.wings.jwt.demo.filter.JwtAuthenticationFilter;
 import com.wings.jwt.demo.filter.JwtValidationFilter;
 import com.wings.jwt.demo.model.User;
@@ -34,6 +35,9 @@ public class WingsConfiguration {
 
 	@Autowired
 	private UserRepository userRepository;
+
+	@Autowired
+	private AuthEntryPoint authEntryPoint;
 //	private final PasswordEncoder passwordEncoder;
 
 //	public WingsConfiguration(UserRepository userRepository, PasswordEncoder passwordEncoder) {
@@ -97,7 +101,8 @@ public class WingsConfiguration {
 				.formLogin(form -> form // Use Spring Security's default login page
 						.permitAll().defaultSuccessUrl("/home", true)// Allow all to access the login page
 				).addFilterBefore(new JwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
-				.addFilterBefore(new JwtValidationFilter(), BasicAuthenticationFilter.class);
+				.addFilterBefore(new JwtValidationFilter(), BasicAuthenticationFilter.class)
+				.exceptionHandling(config -> config.authenticationEntryPoint(authEntryPoint));
 
 		return http.build();
 	}
